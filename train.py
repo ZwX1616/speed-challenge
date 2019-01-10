@@ -24,7 +24,7 @@ from keras.optimizers import Adam
 import keras.backend.tensorflow_backend as KTF
 
 MINI_BATCH_SIZE = 16
-EPOCHS = 20
+EPOCHS = 80
 STEPS_PER_EPOCH = 400
 VERSION = 1
 
@@ -105,7 +105,7 @@ def main(args):
     tensorboard = TensorBoard(log_dir=TENSORBOARD, histogram_freq=0,
                               write_graph=True, write_images=True)
 
-    callbacks_list = [modelCheckpoint, tensorboard, earlyStopping]
+    callbacks_list = [modelCheckpoint, tensorboard]
 
     CHANNEL = 3
     WIDTH = SIZE[0]
