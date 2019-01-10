@@ -24,8 +24,9 @@ from keras.optimizers import Adam
 import keras.backend.tensorflow_backend as KTF
 
 MINI_BATCH_SIZE = 16
-EPOCHS = 250
-STEPS_PER_EPOCH = 800
+EPOCHS = 30
+STEPS_PER_EPOCH = 14280
+VALIDATION_STEPS = 6119
 VERSION = 2
 
 SIZE = (100, 100)
@@ -122,7 +123,7 @@ def main(args):
         callbacks=callbacks_list,
         verbose=1,
         validation_data=validation_generator,
-        validation_steps=400)
+        validation_steps=VALIDATION_STEPS)
 
 
     pickle.dump(history.history, open(HISTORY_PATH, "wb"))
