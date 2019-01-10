@@ -8,18 +8,16 @@ from keras.optimizers import Adam
 import keras.backend.tensorflow_backend as KTF
 
 def build_model(N_img_height, N_img_width, N_img_channels):
-    inputShape = (N_img_height, N_img_width, N_img_channels)
+    input_shape = (N_img_height, N_img_width, N_img_channels)
 
     model = Sequential()
-    # normalization    
-    # perform custom normalization before lambda layer in network
-    model.add(Lambda(lambda x: x/ 127.5 - 1, input_shape = inputShape))
-
     model.add(Convolution2D(24, (5, 5), 
                             strides=(2,2), 
                             padding = 'valid',
                             kernel_initializer = 'he_normal',
-                            name = 'conv1'))
+                            name = 'conv1',
+                            input_shape=input_shape
+                            ))
     
     
     model.add(ELU())    
@@ -52,10 +50,13 @@ def build_model(N_img_height, N_img_width, N_img_channels):
               
               
     model.add(Flatten(name = 'flatten'))
+    model.add(Dropout(0.5))
     model.add(ELU())
     model.add(Dense(100, kernel_initializer = 'he_normal', name = 'fc1'))
+    model.add(Dropout(0.5))
     model.add(ELU())
     model.add(Dense(50, kernel_initializer = 'he_normal', name = 'fc2'))
+    model.add(Dropout(0.5))
     model.add(ELU())
     model.add(Dense(10, kernel_initializer = 'he_normal', name = 'fc3'))
     model.add(ELU())
