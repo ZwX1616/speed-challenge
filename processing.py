@@ -6,7 +6,7 @@ def opticalFuckingFlow(current_frame, next_frame, size):
     current_frame = cv2.cvtColor(current_frame, cv2.COLOR_RGB2GRAY)
     next_frame = cv2.cvtColor(next_frame, cv2.COLOR_RGB2GRAY)
     h, w = size
-    # We need three channels cause well use HSV
+    # We need three channels cause we'll use HSV
     hsv = np.zeros((h, w, 3))
     # set saturation to 255
     hsv[:, :, 1] = 255

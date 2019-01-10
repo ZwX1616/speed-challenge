@@ -7,26 +7,17 @@ import processing
 import argparse
 from model import build_model
 import os
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
-import matplotlib.gridspec as gridspec
 import pandas as pd
 import pickle
 import h5py
 from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
-from keras.models import Sequential
-from keras.layers.convolutional import Convolution2D
-from keras.layers.pooling import MaxPooling2D
-from keras.layers.core import Activation, Dropout, Flatten, Dense, Lambda
-from keras.layers import ELU
-from keras.optimizers import Adam
 import keras.backend.tensorflow_backend as KTF
 
 MINI_BATCH_SIZE = 16
 EPOCHS = 30
-STEPS_PER_EPOCH = 14280
-VALIDATION_STEPS = 6119
+STEPS_PER_EPOCH = 14280 // MINI_BATCH_SIZE
+VALIDATION_STEPS = 6119 // MINI_BATCH_SIZE
 VERSION = 2
 
 SIZE = (100, 100)
