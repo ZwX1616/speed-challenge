@@ -8,7 +8,7 @@ def opticalFuckingFlow(current_frame, next_frame, size):
     h, w = size
     # We need three channels cause we'll use HSV
     hsv = np.zeros((h, w, 3))
-    # set saturation to 255
+    # set saturation to 255, we'll drop it before training
     hsv[:, :, 1] = 255
 
     pyr_scale = 0.4

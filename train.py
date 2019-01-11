@@ -17,10 +17,10 @@ import keras.backend.tensorflow_backend as KTF
 
 MINI_BATCH_SIZE = 16
 EPOCHS = 40
-VERSION = 2
+VERSION = 3
 
 SIZE = (100, 100)
-CHANNEL = 3
+CHANNEL = 2
 WIDTH = SIZE[0]
 HEIGHT = SIZE[1]
 
@@ -57,10 +57,12 @@ def main(args):
     for index, row in tqdm(train_meta.iterrows()):
         frame = cv2.imread(row["flow_path"])
         frame = cv2.resize(frame, SIZE, interpolation=cv2.INTER_AREA)
-        X[index,:,:,:] = frame
         #Normalize
         frame = frame / 40
-        Y[index, 0] = row["speed"]
+        #Drop the useless channel
+        frame = frame[:,:,[1,2]]
+        X[index,:,:,:] = frame
+        Y[index] = row["speed"]
     #Shuffle the data
     randomize = np.arange(len(train_meta))
     np.random.shuffle(randomize)
