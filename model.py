@@ -7,8 +7,8 @@ from keras.layers import ELU
 from keras.optimizers import Adam
 import keras.backend.tensorflow_backend as KTF
 
-def build_model(N_img_height, N_img_width, N_img_channels, lr):
-    input_shape = (N_img_height, N_img_width, N_img_channels)
+def build_model(HEIGHT, WIDTH, CHANNELS, lr):
+    input_shape = (HEIGHT, WIDTH, CHANNELS)
 
     model = Sequential()
     model.add(Convolution2D(24, (5, 5), 
@@ -60,9 +60,7 @@ def build_model(N_img_height, N_img_width, N_img_channels, lr):
     model.add(ELU())
     model.add(Dense(10, kernel_initializer = 'he_normal', name = 'fc3'))
     model.add(ELU())
-    
-    # do not put activation at the end because we want to exact output, not a class identifier
-    model.add(Dense(1, name = 'output', kernel_initializer = 'he_normal'))
+    model.add(Dense(1, name = 'speed', kernel_initializer = 'he_normal'))
     
     adam = Adam(lr=lr)
     #Let's try vanilla adam
