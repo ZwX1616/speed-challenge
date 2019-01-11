@@ -60,7 +60,7 @@ def main(args):
         #Normalize
         frame = frame / 40
         #Drop the useless channel
-        frame = frame[:,:,[1,2]]
+        frame = frame[:,:,[0,2]]
         X[index,:,:,:] = frame
         Y[index] = row["speed"]
     #Shuffle the data
