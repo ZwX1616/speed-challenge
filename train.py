@@ -15,8 +15,8 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
 import keras.backend.tensorflow_backend as KTF
 
-MINI_BATCH_SIZE = 16
-EPOCHS = 40
+MINI_BATCH_SIZE = 32
+EPOCHS = 100
 VERSION = 3
 
 SIZE = (100, 100)
@@ -57,10 +57,10 @@ def main(args):
     for index, row in tqdm(train_meta.iterrows()):
         frame = cv2.imread(row["flow_path"])
         frame = cv2.resize(frame, SIZE, interpolation=cv2.INTER_AREA)
-        #Normalize
-        frame = frame / 40
         #Drop the useless channel
         frame = frame[:,:,[0,2]]
+        #Normalize
+        frame = frame / 40
         X[index,:,:,:] = frame
         Y[index] = row["speed"]
     #Shuffle the data

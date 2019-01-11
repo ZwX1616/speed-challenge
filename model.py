@@ -64,7 +64,8 @@ def build_model(N_img_height, N_img_width, N_img_channels):
     # do not put activation at the end because we want to exact output, not a class identifier
     model.add(Dense(1, name = 'output', kernel_initializer = 'he_normal'))
     
-    adam = Adam(lr=1e-4, beta_1=0.9, beta_2=0.999, epsilon=1e-08, decay=0.0)
-    model.compile(optimizer = adam, loss = 'mse')
+    #adam = Adam(lr=1e-4, beta_1=0.9, beta_2=0.999, epsilon=1e-08, decay=0.0)
+    #Let's try vanilla adam
+    model.compile(optimizer = "adam", loss = 'mse')
 
     return model
