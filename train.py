@@ -17,12 +17,13 @@ import keras.backend.tensorflow_backend as KTF
 
 MINI_BATCH_SIZE = 32
 EPOCHS = 100
-VERSION = 4
+VERSION = 5
 
 SIZE = (100, 100)
 CHANNEL = 2
 WIDTH = SIZE[0]
 HEIGHT = SIZE[1]
+LEARNING_RATE = 0.005
 
 
 CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -35,7 +36,7 @@ FLOW_IMGS_TRAIN = os.path.join(PREPARED_DATA_PATH, 'flow_train_imgs')
 PREPARED_IMGS_TEST = os.path.join(PREPARED_DATA_PATH, 'test_imgs')
 FLOW_IMGS_TEST = os.path.join(PREPARED_DATA_PATH, 'flow_test_imgs')
 SAVES = os.path.join(CURRENT_DIR, 'saves')
-MODEL_SAVE_PATH = os.path.join(CURRENT_DIR, 'saves', str(VERSION), str(EPOCHS))
+MODEL_SAVE_PATH = os.path.join(CURRENT_DIR, 'saves', str(VERSION), str(EPOCHS), str(LEARNING_RATE))
 WEIGHTS_PATH = os.path.join(MODEL_SAVE_PATH, 'weights.{epoch:02d}-{val_loss:.2f}.hdf5')
 HISTORY_PATH = os.path.join(MODEL_SAVE_PATH, 'history.p')
 TENSORBOARD = os.path.join(MODEL_SAVE_PATH, 'tensorboard')
@@ -82,7 +83,7 @@ def main(args):
     callbacks_list = [modelCheckpoint, tensorboard]
 
 
-    model = build_model(HEIGHT, WIDTH, CHANNEL)
+    model = build_model(HEIGHT, WIDTH, CHANNEL, LEARNING_RATE)
 
 
     model.summary()
