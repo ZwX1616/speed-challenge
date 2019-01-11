@@ -17,7 +17,7 @@ import keras.backend.tensorflow_backend as KTF
 
 MINI_BATCH_SIZE = 32
 EPOCHS = 100
-VERSION = 3
+VERSION = 4
 
 SIZE = (100, 100)
 CHANNEL = 2
