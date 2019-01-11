@@ -3,6 +3,7 @@
 import numpy as np
 import tensorflow as tf
 import cv2
+from tqdm import tqdm
 import processing
 import argparse
 from model import build_model
@@ -15,12 +16,13 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
 import keras.backend.tensorflow_backend as KTF
 
 MINI_BATCH_SIZE = 16
-EPOCHS = 30
-STEPS_PER_EPOCH = 14280 // MINI_BATCH_SIZE
-VALIDATION_STEPS = 6119 // MINI_BATCH_SIZE
+EPOCHS = 40
 VERSION = 2
 
 SIZE = (100, 100)
+CHANNEL = 3
+WIDTH = SIZE[0]
+HEIGHT = SIZE[1]
 
 
 CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -49,43 +51,21 @@ def main(args):
     train_meta = pd.read_csv(args.train_flow_meta_file)
     print('shape: ', train_meta.shape)
     
-    generator = ImageDataGenerator(rescale=1./40.,validation_split=args.split)
-
-    directory = FLOW_IMGS_TRAIN
-    train_meta.flow_path = train_meta.flow_path.apply(lambda x: x.replace(directory + '/', ''))
-    print(train_meta.head())
-
-    train_generator = generator.flow_from_dataframe(
-        dataframe=train_meta,
-        directory=directory,
-        has_ext=True,
-        x_col="flow_path",
-        y_col="speed",
-        subset="training",
-        batch_size=MINI_BATCH_SIZE,
-        seed=42,
-        shuffle=True,
-        target_size=SIZE,
-        class_mode="other",
-        )
-    validation_generator = generator.flow_from_dataframe(
-        dataframe=train_meta,
-        directory=directory,
-        x_col="flow_path",
-        y_col="speed",
-        subset="validation",
-        batch_size=MINI_BATCH_SIZE,
-        seed=42,
-        shuffle=True,
-        target_size=SIZE,
-        class_mode="other",
-    )
-    
-    earlyStopping = EarlyStopping(monitor='val_loss',
-                                  patience=5,
-                                  verbose=1,
-                                  min_delta=0.23,
-                                  mode='min',)
+    #Load the data
+    X = np.empty((len(train_meta), HEIGHT, WIDTH, CHANNEL))
+    Y = np.empty((len(train_meta), 1))
+    for index, row in tqdm(train_meta.iterrows()):
+        frame = cv2.imread(row["flow_path"])
+        frame = cv2.resize(frame, SIZE, interpolation=cv2.INTER_AREA)
+        X[index,:,:,:] = frame
+        #Normalize
+        frame = frame / 40
+        Y[index, 0] = row["speed"]
+    #Shuffle the data
+    randomize = np.arange(len(train_meta))
+    np.random.shuffle(randomize)
+    X = X[randomize]
+    Y = Y[randomize]
 
     modelCheckpoint = ModelCheckpoint(WEIGHTS_PATH,
                                       monitor='val_loss',
@@ -99,22 +79,20 @@ def main(args):
 
     callbacks_list = [modelCheckpoint, tensorboard]
 
-    CHANNEL = 3
-    WIDTH = SIZE[0]
-    HEIGHT = SIZE[1]
+
     model = build_model(HEIGHT, WIDTH, CHANNEL)
 
 
     model.summary()
 
-    history = model.fit_generator(
-        train_generator,
-        steps_per_epoch=STEPS_PER_EPOCH,
+    history = model.fit(
+        X,
+        Y,
+        batch_size=MINI_BATCH_SIZE,
         epochs=EPOCHS,
         callbacks=callbacks_list,
         verbose=1,
-        validation_data=validation_generator,
-        validation_steps=VALIDATION_STEPS)
+        validation_split=args.split)
 
 
     pickle.dump(history.history, open(HISTORY_PATH, "wb"))
