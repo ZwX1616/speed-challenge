@@ -1,4 +1,3 @@
-
 # coding: utf-8
 import numpy as np
 import tensorflow as tf
@@ -49,10 +48,9 @@ def main(args):
     if not os.path.exists(MODEL_SAVE_PATH):
         os.makedirs(MODEL_SAVE_PATH)
 
-    train_meta = pd.read_csv(args.train_flow_meta_file)
-    print('shape: ', train_meta.shape)
-    
+    train_meta = pd.read_csv(args.train_flow_meta_file)    
     #Load the data
+    print("Loading the dataset")
     X = np.empty((len(train_meta), HEIGHT, WIDTH, CHANNEL))
     Y = np.empty((len(train_meta), 1))
     for index, row in tqdm(train_meta.iterrows()):
@@ -60,15 +58,15 @@ def main(args):
         frame = cv2.resize(frame, SIZE, interpolation=cv2.INTER_AREA)
         #Drop the useless channel
         frame = frame[:,:,[0,2]]
-        #Normalize
+        #Normalize. 40 has been chosen empirically
         frame = frame / 40
         X[index,:,:,:] = frame
         Y[index] = row["speed"]
     #Shuffle the data
-    randomize = np.arange(len(train_meta))
-    np.random.shuffle(randomize)
-    X = X[randomize]
-    Y = Y[randomize]
+    idx = np.arange(len(train_meta))
+    np.random.shuffle(idx)
+    X = X[idx]
+    Y = Y[idx]
 
     modelCheckpoint = ModelCheckpoint(WEIGHTS_PATH,
                                       monitor='val_loss',
@@ -77,23 +75,23 @@ def main(args):
                                       verbose=1,
                                       save_weights_only=True)
 
-    tensorboard = TensorBoard(log_dir=TENSORBOARD, histogram_freq=0,
+    tensorBoard = TensorBoard(log_dir=TENSORBOARD, histogram_freq=0,
                               write_graph=True, write_images=True)
 
-    callbacks_list = [modelCheckpoint, tensorboard]
+    callbacks = [modelCheckpoint, tensorBoard]
 
 
     model = build_model(HEIGHT, WIDTH, CHANNEL, LEARNING_RATE)
 
 
     model.summary()
-
+    print("Training")
     history = model.fit(
         X,
         Y,
         batch_size=MINI_BATCH_SIZE,
         epochs=EPOCHS,
-        callbacks=callbacks_list,
+        callbacks=callbacks,
         verbose=1,
         validation_split=args.split)
 

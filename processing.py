@@ -10,7 +10,7 @@ def opticalFuckingFlow(current_frame, next_frame, size):
     hsv = np.zeros((h, w, 3))
     # set saturation to 255, we'll drop it before training
     hsv[:, :, 1] = 255
-
+    
     pyr_scale = 0.4
     levels = 1
     winsize = 12
@@ -28,6 +28,9 @@ def opticalFuckingFlow(current_frame, next_frame, size):
                                         poly_sigma,
                                         0)
 
+    #optical flow -> Rgb
+    #https://gist.github.com/myfavouritekk/2cee1ec99b74e962f816
+
     magnitude, angle = cv2.cartToPolar(flow[..., 0], flow[..., 1])
 
     hsv[:, :, 0] = angle * (180 / np.pi / 2)
@@ -39,7 +42,7 @@ def opticalFuckingFlow(current_frame, next_frame, size):
 
 
 def crop_resize_frame(frame, size):
-    frame_cropped = frame[25:375, :]  # Remove the useless stuff from the video
+    frame_cropped = frame[25:375, :]  # Remove the useless stuff from the video (Top "vignette" effect + the car itself)
 
     frame = cv2.resize(frame_cropped, size, interpolation=cv2.INTER_AREA)
 
@@ -47,6 +50,7 @@ def crop_resize_frame(frame, size):
 
 
 def process(frame1_path, frame2_path, size, debug=False):
+    #Process two adjacent frames
     frame1 = cv2.imread(frame1_path)
     frame2 = cv2.imread(frame2_path)
 

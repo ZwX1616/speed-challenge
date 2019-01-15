@@ -28,11 +28,6 @@ TEST_FRAMES = 10798
 
 
 
-
-speeds_train = list(pd.read_csv(os.path.join(DATA_PATH, 'train.txt'), header=None, squeeze=True))
-
-assert(len(speeds_train)==TRAIN_FRAMES)
-
 def prepare_dataset(video_path, frame_folder, flow_folder, name, speeds=None):
     tqdm.set_lock(Lock())  # manually set internal lock
     #Step 1, Extract frames and speed
@@ -41,7 +36,7 @@ def prepare_dataset(video_path, frame_folder, flow_folder, name, speeds=None):
         os.makedirs(frame_folder)
     print("Reading the video file")
     video_sk = skvideo.io.vread(video_path)
-
+    print("Extracting the frames")
     for index, frame in enumerate(tqdm(video_sk)):    
         saving_path = os.path.join(frame_folder, str(index)+'.jpg')
         if speeds is None:
@@ -59,6 +54,7 @@ def prepare_dataset(video_path, frame_folder, flow_folder, name, speeds=None):
     flow_dict = {}
     if not os.path.exists(flow_folder):
         os.makedirs(flow_folder)
+    print("Computing the optical flow")
     for index in tqdm(range(len(processed_dataframe ) - 1)):
         idx1 = index
         idx2 = index + 1
@@ -89,7 +85,10 @@ def prepare_dataset(video_path, frame_folder, flow_folder, name, speeds=None):
 
 
 if __name__ == "__main__":
+    speeds_train = list(pd.read_csv(os.path.join(DATA_PATH, 'train.txt'), header=None, squeeze=True))
+    print("==Processing Train==")
     prepare_dataset(TRAIN_VIDEO, PREPARED_IMGS_TRAIN, FLOW_IMGS_TRAIN, 'train', speeds_train)
+    print("==Processing Test==")
     prepare_dataset(TEST_VIDEO, PREPARED_IMGS_TEST, FLOW_IMGS_TEST, 'test')
 
 

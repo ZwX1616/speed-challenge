@@ -1,13 +1,12 @@
-from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
 from keras.models import Sequential
-from keras.layers.convolutional import Convolution2D
-from keras.layers.pooling import MaxPooling2D
-from keras.layers.core import Activation, Dropout, Flatten, Dense, Lambda
 from keras.layers import ELU
+from keras.layers.convolutional import Convolution2D
+from keras.layers.core import Dropout, Flatten, Dense
 from keras.optimizers import Adam
-import keras.backend.tensorflow_backend as KTF
 
 def build_model(HEIGHT, WIDTH, CHANNELS, lr):
+    #https://devblogs.nvidia.com/deep-learning-self-driving-cars/
+    #I used this network's structure
     input_shape = (HEIGHT, WIDTH, CHANNELS)
 
     model = Sequential()

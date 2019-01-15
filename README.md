@@ -2,7 +2,7 @@
 
 Comma.ai speed challenge attempt.
 Goal: Predict the speed of a driving car from a dashcam.
-I used a CNN which input is a Farnback optical flow between two frames, regression goal was the average of the speed of these two frames
+I used a CNN which input is a Farneback optical flow between two frames, regression goal was the average of the speed of these two frames
 
 ### Run:
 **Prepare data**
