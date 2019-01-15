@@ -66,16 +66,16 @@ def main(args):
             frame = frame / 127.5
             x[index,:,:,:] = frame
             y[index] = row["speed"]
-        #Shuffle the data
-        idx = np.arange(len(train_meta))
-        np.random.shuffle(idx)
-        x = x[idx]
-        y = y[idx]
         XS.append(x)
         YS.append(y)
+
     X = np.concatenate(XS, axis=0)
     Y = np.concatenate(YS, axis=0)
-    
+    #Shuffle the data
+    idx = np.arange(X.shape[0])
+    np.random.shuffle(idx)
+    X = X[idx]
+    Y = Y[idx]
     
     modelCheckpoint = ModelCheckpoint(WEIGHTS_PATH,
                                       monitor='val_loss',
