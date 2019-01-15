@@ -34,11 +34,10 @@ def opticalFuckingFlow(current_frame, next_frame, size):
     magnitude, angle = cv2.cartToPolar(flow[..., 0], flow[..., 1])
 
     hsv[:, :, 0] = angle * (180 / np.pi / 2)
-    hsv[:, :, 2] = (magnitude * 15).astype(int)
+    hsv[:, :, 2] = (magnitude * 20).astype(int)
 
     hsv = np.asarray(hsv, dtype=np.float32)
-    rgb_flow = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
-    return rgb_flow
+    return hsv
 
 
 def crop_resize_frame(frame, size):

@@ -48,26 +48,35 @@ def main(args):
     if not os.path.exists(MODEL_SAVE_PATH):
         os.makedirs(MODEL_SAVE_PATH)
 
-    train_meta = pd.read_csv(args.train_flow_meta_file)    
-    #Load the data
-    print("Loading the dataset")
-    X = np.empty((len(train_meta), HEIGHT, WIDTH, CHANNEL))
-    Y = np.empty((len(train_meta), 1))
-    for index, row in tqdm(train_meta.iterrows()):
-        frame = cv2.imread(row["flow_path"])
-        frame = cv2.resize(frame, SIZE, interpolation=cv2.INTER_AREA)
-        #Drop the useless channel
-        frame = frame[:,:,[0,2]]
-        #Normalize. 40 has been chosen empirically
-        frame = frame / 40
-        X[index,:,:,:] = frame
-        Y[index] = row["speed"]
-    #Shuffle the data
-    idx = np.arange(len(train_meta))
-    np.random.shuffle(idx)
-    X = X[idx]
-    Y = Y[idx]
-
+    meta_files = args.meta_files.split(',')
+    XS = []
+    YS = []
+    for meta_file in meta_files:
+        train_meta = pd.read_csv(meta_file)    
+        #Load the data
+        print("Loading the datasets")
+        x = np.empty((len(train_meta), HEIGHT, WIDTH, CHANNEL))
+        y = np.empty((len(train_meta), 1))
+        for index, row in tqdm(train_meta.iterrows()):
+            frame = cv2.imread(row["flow_path"])
+            frame = cv2.resize(frame, SIZE, interpolation=cv2.INTER_AREA)
+            #Drop the useless channel
+            frame = frame[:,:,[0,2]]
+            #Normalize. 127.5 is half 256.
+            frame = frame / 127.5
+            x[index,:,:,:] = frame
+            y[index] = row["speed"]
+        #Shuffle the data
+        idx = np.arange(len(train_meta))
+        np.random.shuffle(idx)
+        x = x[idx]
+        y = y[idx]
+        XS.append(x)
+        YS.append(y)
+    X = np.concatenate(XS, axis=0)
+    Y = np.concatenate(YS, axis=0)
+    
+    
     modelCheckpoint = ModelCheckpoint(WEIGHTS_PATH,
                                       monitor='val_loss',
                                       save_best_only=False,
@@ -100,8 +109,8 @@ def main(args):
 
 if __name__=="__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("train_flow_meta_file",
-                        help="Train Flow Images meta file")
+    parser.add_argument("meta_files",
+                        help="Meta files")
     parser.add_argument("--split", type=float, default=0,
                         help="Percentage of data used to validate the model")
     args = parser.parse_args()

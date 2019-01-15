@@ -14,18 +14,17 @@ from multiprocessing import Lock
 CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
 DATA_PATH =  os.path.join(CURRENT_DIR, 'data')
 TRAIN_VIDEO = os.path.join(DATA_PATH, 'train.mp4')
+STOP_VIDEO = os.path.join(DATA_PATH, 'stop.mp4')
 TEST_VIDEO = os.path.join(DATA_PATH, 'test.mp4')
 PREPARED_DATA_PATH = os.path.join(DATA_PATH, 'prepared-data')
+PREPARED_IMGS_STOP = os.path.join(PREPARED_DATA_PATH, 'stop_imgs')
+FLOW_IMGS_STOP = os.path.join(PREPARED_DATA_PATH, 'flow_stop_imgs')
 PREPARED_IMGS_TRAIN = os.path.join(PREPARED_DATA_PATH, 'train_imgs')
 FLOW_IMGS_TRAIN = os.path.join(PREPARED_DATA_PATH, 'flow_train_imgs')
 PREPARED_IMGS_TEST = os.path.join(PREPARED_DATA_PATH, 'test_imgs')
 FLOW_IMGS_TEST = os.path.join(PREPARED_DATA_PATH, 'flow_test_imgs')
 
-SIZE = (150, 150)
-
-TRAIN_FRAMES = 20400
-TEST_FRAMES = 10798
-
+SIZE = (100, 100)
 
 
 def prepare_dataset(video_path, frame_folder, flow_folder, name, speeds=None):
@@ -71,7 +70,7 @@ def prepare_dataset(video_path, frame_folder, flow_folder, name, speeds=None):
 
         flow = process(frame1_path, frame2_path, SIZE)
 
-        flow_path = os.path.join(flow_folder, str(index) + '.jpg') 
+        flow_path = os.path.join(flow_folder, str(index) + '.png') 
 
         cv2.imwrite(flow_path, flow)
 
@@ -86,6 +85,9 @@ def prepare_dataset(video_path, frame_folder, flow_folder, name, speeds=None):
 
 if __name__ == "__main__":
     speeds_train = list(pd.read_csv(os.path.join(DATA_PATH, 'train.txt'), header=None, squeeze=True))
+    speeds_stop = [0] * 480
+    print("==Processing Stop==")
+    prepare_dataset(STOP_VIDEO, PREPARED_IMGS_STOP, FLOW_IMGS_STOP, 'stop', speeds_stop)
     print("==Processing Train==")
     prepare_dataset(TRAIN_VIDEO, PREPARED_IMGS_TRAIN, FLOW_IMGS_TRAIN, 'train', speeds_train)
     print("==Processing Test==")
